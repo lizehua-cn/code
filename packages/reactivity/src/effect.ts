@@ -1,4 +1,13 @@
 export let activeEffect
+function cleanupEffect(effect) {
+  // 执行依赖收集之前, 清理当前 effect 对应的依赖
+  let { deps } = effect
+  // 因为deps的每个key都有set引用, 所以要循环
+  for (let i = 0; i < deps.length; i++) {
+    deps[i].delete(effect)
+  }
+  effect.deps.length = 0
+}
 export class ReactiveEffect {
   public active = true
   public deps = []
@@ -14,7 +23,10 @@ export class ReactiveEffect {
       // 刚进来先获取parent
       this.parent = activeEffect
       activeEffect = this
-      // fn 内如果有响应式属性, 则触发响应式get方法
+      // 为什么第一次收集属性的时候, 需要让当前 effect 记录 dep,
+      // 原因需要在收集前删除对应依赖
+      cleanupEffect(this)
+      // fn 内如果有响应式属性, 则触发响应式get方法(依赖收集)
       return this.fn()
     } finally {
       // 执行完fn, 清理effect(如果有嵌套获取父级effect)
@@ -64,9 +76,15 @@ export function trigger(target, key, val, oldVal) {
   }
   const dep = depsMap.get(key)
   if (dep) {
+    // 防止清理依赖时死循环
+    const effects = [...dep]
     // 使deps里的每一项都重新执行 run(fn) 方法
-    dep.forEach(effect => {
-      effect.run()
+    effects.forEach(effect => {
+      // 这个判断是为了阻止在effect中设置属性从而触发更新,造成死循环
+      if (effect !== activeEffect) {
+        // FIXME 每次run 都要重新收集
+        effect.run()
+      }
     })
   }
 }
