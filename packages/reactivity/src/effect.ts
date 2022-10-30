@@ -55,3 +55,18 @@ export function track(target, key) {
     activeEffect.deps.push(dep)
   }
 }
+// 触发更新
+export function trigger(target, key, val, oldVal) {
+  const depsMap = targetMap.get(target)
+  if (!depsMap) {
+    // 如果是在effect外设置响应属性 直接return
+    return
+  }
+  const dep = depsMap.get(key)
+  if (dep) {
+    // 使deps里的每一项都重新执行 run(fn) 方法
+    dep.forEach(effect => {
+      effect.run()
+    })
+  }
+}
