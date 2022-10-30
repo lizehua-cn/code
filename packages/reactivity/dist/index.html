@@ -17,15 +17,15 @@
       }
     </script>
     <script type="module">
-      import { reactive, effect } from 'vue-train'
-      // import { reactive, effect } from 'vue'
-      const state = { name: 'a', age: 19, n: { n: 1 } }
+      // import { reactive, effect } from 'vue-train'
+      import { reactive, effect } from 'vue'
+      const state = reactive({ name: 'a', age: 19, n: { n: 1 } })
       effect(() => {
-        app.innerHTML = state.name
+        console.log('state.n', state.n)
       })
       setTimeout(() => {
-        state.name = 'aaa'
-      }, 1000)
+        state.n = { n: 1 }
+      })
     </script>
   </body>
 </html>
