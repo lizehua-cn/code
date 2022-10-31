@@ -12,7 +12,7 @@ export class ReactiveEffect {
   public active = true
   public deps = []
   public parent = undefined
-  constructor(public fn) {}
+  constructor(public fn, private scheduler) {}
   run() {
     // 如果不是激活的 直接执行
     if (!this.active) {
@@ -43,8 +43,8 @@ export class ReactiveEffect {
     }
   }
 }
-export function effect(fn) {
-  const _effect = new ReactiveEffect(fn)
+export function effect(fn, options: any = {}) {
+  const _effect = new ReactiveEffect(fn, options.scheduler)
   _effect.run() // 默认执行一次
   // bind call 除了传参区别外
   // bind 返回原函数
@@ -97,7 +97,11 @@ export function trigger(target, key, val, oldVal) {
       // 这个判断是为了阻止在effect中设置属性从而触发更新,造成死循环
       if (effect !== activeEffect) {
         // FIXME 每次run 都要重新收集
-        effect.run()
+        if (effect.scheduler) {
+          effect.scheduler()
+        } else {
+          effect.run()
+        }
       }
     })
   }
