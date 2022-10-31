@@ -1,5 +1,6 @@
+import { isObject } from '@vue/shared'
 import { track, trigger } from './effect'
-import { ReactiveFlags } from './reactive'
+import { reactive, ReactiveFlags } from './reactive'
 export const mutableHandles = {
   get(target, key, receiver) {
     // FIXME 会改变this指向
@@ -7,7 +8,13 @@ export const mutableHandles = {
     // 可以通过此字段判断是否是被代理对象
     if (key === ReactiveFlags.IS_REACTIVE) return true
     track(target, key)
-    return Reflect.get(target, key, receiver)
+    const r = Reflect.get(target, key, receiver)
+    if (isObject(r)) {
+      // 如果是对象, 重新注册为响应式
+      // 取值时才会触发, 性能优化
+      return reactive(r)
+    }
+    return r
   },
   set(target, key, value, receiver) {
     let oldVal = target[key]
