@@ -34,10 +34,24 @@ export class ReactiveEffect {
       this.parent = undefined
     }
   }
+  stop() {
+    // effect 手动失活
+    if (this.active) {
+      // 先将依赖清除, 然后把active变为失活
+      cleanupEffect(this)
+      this.active = false
+    }
+  }
 }
 export function effect(fn) {
   const _effect = new ReactiveEffect(fn)
   _effect.run() // 默认执行一次
+  // bind call 除了传参区别外
+  // bind 返回原函数
+  // call 返回原函数的返回值
+  const runner = _effect.run.bind(_effect)
+  runner.effect = _effect
+  return runner
 }
 // let map = weakMap{
 //   target: map{

@@ -11,7 +11,7 @@ export const mutableHandles = {
   },
   set(target, key, value, receiver) {
     let oldVal = target[key]
-    // r 是一个 bolean
+    // r 是一个 boolean
     let r = Reflect.set(target, key, value, receiver)
     // TODO oldVal 或者 value 是对象怎么办(也会触发)
     if (oldVal !== value) {
