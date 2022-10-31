@@ -8,6 +8,7 @@ export const mutableHandles = {
     // 可以通过此字段判断是否是被代理对象
     if (key === ReactiveFlags.IS_REACTIVE) return true
     track(target, key)
+    // Reflect 保证this 是当前被代理对象
     const r = Reflect.get(target, key, receiver)
     if (isObject(r)) {
       // 如果是对象, 重新注册为响应式
