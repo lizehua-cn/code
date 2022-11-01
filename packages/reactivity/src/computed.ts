@@ -1,8 +1,14 @@
 import { isFunction } from '@vue/shared'
-import { ReactiveEffect } from './effect'
+import {
+  activeEffect,
+  ReactiveEffect,
+  trackEffect,
+  triggerEffects
+} from './effect'
 const noop = () => {}
 class ComputedRefImpl {
-  // dep: undefined // : ts 类型, = 赋值操作
+  // dep: undefined // ts 类型
+  // dep = undefined // ts 赋值操作
   dep = undefined
   effect
   __v_isRef = true // ref需要用.value来取值
@@ -13,9 +19,15 @@ class ComputedRefImpl {
     this.effect = new ReactiveEffect(getter, () => {
       // 值修改触发调度函数,将 dirty 变为脏的
       this._dirty = true
+      triggerEffects(this.dep)
     })
   }
   get value() {
+    if (activeEffect) {
+      // 在 effect 中使用计算属性
+      // 计算属性触发依赖收集
+      trackEffect(this.dep || (this.dep = new Set()))
+    }
     if (this._dirty) {
       // 当 dirty 为脏的时, 获取value
       this._value = this.effect.run()
@@ -23,7 +35,7 @@ class ComputedRefImpl {
     }
     return this._value
   }
-  set(newValue) {
+  set value(newValue) {
     this.setter(newValue)
   }
 }

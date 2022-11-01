@@ -74,6 +74,9 @@ export function track(target, key) {
   if (!dep) {
     depsMap.set(key, (dep = new Set()))
   }
+  trackEffect(dep)
+}
+export function trackEffect(dep) {
   let shouldTrack = !dep.has(activeEffect)
   if (shouldTrack) {
     dep.add(activeEffect)
@@ -90,19 +93,23 @@ export function trigger(target, key, val, oldVal) {
   }
   const dep = depsMap.get(key)
   if (dep) {
-    // 防止清理依赖时死循环
-    const effects = [...dep]
-    // 使deps里的每一项都重新执行 run(fn) 方法
-    effects.forEach(effect => {
-      // 这个判断是为了阻止在effect中设置属性从而触发更新,造成死循环
-      if (effect !== activeEffect) {
-        // FIXME 每次run 都要重新收集
-        if (effect.scheduler) {
-          effect.scheduler()
-        } else {
-          effect.run()
-        }
-      }
-    })
+    triggerEffects(dep)
   }
+}
+
+export function triggerEffects(dep) {
+  // 防止清理依赖时死循环
+  const effects = [...dep]
+  // 使deps里的每一项都重新执行 run(fn) 方法
+  effects.forEach(effect => {
+    // 这个判断是为了阻止在effect中设置属性从而触发更新,造成死循环
+    if (effect !== activeEffect) {
+      // FIXME 每次run 都要重新收集
+      if (effect.scheduler) {
+        effect.scheduler()
+      } else {
+        effect.run()
+      }
+    }
+  })
 }
