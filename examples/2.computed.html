@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "../node_modules/@vue/reactivity/dist/reactivity.esm-browser.js",
+          "vue-train": "../packages/reactivity/dist/reactivity.esm.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { reactive, effect, computed } from 'vue-train'
+      // import { reactive, effect, computed } from 'vue'
+      const obj = reactive({ name: { a: 1 } })
+      // computed 有缓存功能吗如果依赖不变就不会重新计算
+      const name = computed(() => {
+        console.log('默认不执行')
+        return obj.name
+      })
+      name.value
+    </script>
+  </body>
+</html>

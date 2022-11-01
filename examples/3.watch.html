@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "../node_modules/vue/dist/vue.esm-browser.js",
+          "vue-train": "../packages/reactivity/dist/reactivity.esm.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { reactive, effect, watch } from 'vue-train'
+      // import { reactive, watch } from 'vue'
+      const state = reactive({ name: 'aa', age: 18 })
+      watch(state, (val, oldVal) => {
+        console.log('watch', val)
+      })
+      // state.name = 'bbs'
+    </script>
+  </body>
+</html>
