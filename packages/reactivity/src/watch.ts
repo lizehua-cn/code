@@ -24,10 +24,15 @@ function doWatch(source, cb, { immediate } = {} as any) {
     getter = source
   }
   let oldVal
+  let cleanup
+  function onCleanup(userCb) {
+    cleanup = userCb
+  }
   const job = () => {
     if (cb) {
       let newVal = effect.run()
-      cb(newVal, oldVal)
+      if (cleanup) cleanup()
+      cb(newVal, oldVal, onCleanup)
       oldVal = newVal
     } else {
       effect.run()

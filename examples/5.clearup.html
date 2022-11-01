@@ -20,17 +20,32 @@
       import { reactive, effect, watch, watchEffect } from 'vue-train'
       // import { reactive, watch, watchEffect } from 'vue'
       const state = reactive({ name: 'aa', age: 18, n: { n: 1 } })
+      let timer = 2000
+      function getData(data) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(data)
+          }, (timer -= 1000))
+        })
+      }
+      // 解决第一次后响应覆盖第二次结果
+      // 每次执行前清理上一次响应处理(只是屏蔽相应处理, 没有屏蔽请求)
+      let list = []
       watch(
         () => state.name,
-        (val, oldVal) => {
-          console.log('watch', val)
+        async (val, oldVal, onCleanup) => {
+          let flag = true
+          onCleanup(() => {
+            flag = false
+          })
+          const r = await getData(val)
+          if (flag) {
+            console.log('r', r)
+          }
         }
       )
-      watchEffect(() => {
-        console.log('watchEffect', )
-        document.getElementById('app').innerHtml = state.name
-      })
-      // state.name = 123
+      state.name = 123
+      state.name = 456
     </script>
   </body>
 </html>
