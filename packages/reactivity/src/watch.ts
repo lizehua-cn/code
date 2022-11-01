@@ -15,7 +15,7 @@ function traverse(source, s = new Set()) {
   }
   return source
 }
-export function watch(source, cb, { immediate } = {} as any) {
+function doWatch(source, cb, { immediate } = {} as any) {
   let getter
   if (isReactive(source)) {
     // 都处理成函数
@@ -25,9 +25,13 @@ export function watch(source, cb, { immediate } = {} as any) {
   }
   let oldVal
   const job = () => {
-    let newVal = effect.run()
-    cb(newVal, oldVal)
-    oldVal = newVal
+    if (cb) {
+      let newVal = effect.run()
+      cb(newVal, oldVal)
+      oldVal = newVal
+    } else {
+      effect.run()
+    }
   }
   const effect = new ReactiveEffect(getter, job)
   if (immediate) {
@@ -35,4 +39,10 @@ export function watch(source, cb, { immediate } = {} as any) {
     return job()
   }
   oldVal = effect.run()
+}
+export function watch(source, cb, options) {
+  doWatch(source, cb, options)
+}
+export function watchEffect(effect, options) {
+  doWatch(effect, null, options)
 }
