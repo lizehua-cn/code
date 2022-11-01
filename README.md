@@ -19,3 +19,5 @@
    - 默认 watchEffect 会让用到的响应式数据收集到当前 effect,数据变化后再次执行回调
    - watch => effect + scheduler
    - watchEffect => effect
+5. ref
+   ref 把当前值设置为响应式, 在获取值是触发依赖收集, 设置值时触发依赖更新

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "../node_modules/vue/dist/vue.esm-browser.js",
+          "vue-train": "../packages/reactivity/dist/reactivity.esm.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { reactive, ref, watchEffect } from 'vue-train'
+      // import { reactive, ref, watchEffect } from 'vue'
+      const state = reactive({ name: 'aa', age: 18, n: { n: 1 } })
+      const flag = ref(true)
+      watchEffect(() => {
+        console.log(flag.value ? state.name : state.age)
+      })
+      flag.value = false
+    </script>
+  </body>
+</html>
