@@ -4,8 +4,8 @@ class EffectScope {
   effects = [] // 收集内部 effect
   parent = null
   scopes // 收集所有作用域
-  constructor() {
-    if (activeEffectScope) {
+  constructor(detached = false) {
+    if (!detached && activeEffectScope) {
       ;(activeEffectScope.scopes || (activeEffectScope.scopes = [])).push(this)
     }
   }
@@ -41,6 +41,6 @@ export function recordEffectScope(effect) {
     activeEffectScope.effects.push(effect)
   }
 }
-export function effectScope() {
-  return new EffectScope()
+export function effectScope(detached) {
+  return new EffectScope(detached)
 }
