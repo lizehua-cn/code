@@ -1,3 +1,5 @@
+import { recordEffectScope } from "./effectScope"
+
 export let activeEffect
 function cleanupEffect(effect) {
   // 执行依赖收集之前, 清理当前 effect 对应的依赖
@@ -12,7 +14,9 @@ export class ReactiveEffect {
   public active = true
   public deps = []
   public parent = undefined
-  constructor(public fn, private scheduler) {}
+  constructor(public fn, private scheduler) {
+    recordEffectScope(this)
+  }
   run() {
     // 如果不是激活的 直接执行
     if (!this.active) {

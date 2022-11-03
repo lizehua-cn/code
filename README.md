@@ -21,3 +21,9 @@
    - watchEffect => effect
 5. ref
    ref 把当前值设置为响应式, 在获取值是触发依赖收集, 设置值时触发依赖更新
+6. ref, toRef, toRefs
+   toRef 获取 target 上的属性
+   toRefs 获取 target 上的所有属性
+7. effectScope
+   执行run时, 创建 effect, 并把 effect 收集到全局,
+   调用 effectScope.stop 遍历列表, 把所有的 effect 停止

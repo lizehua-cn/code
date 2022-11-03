@@ -17,14 +17,19 @@
       }
     </script>
     <script type="module">
-      import { reactive, ref, watchEffect } from 'vue-train'
-      // import { reactive, ref, watchEffect } from 'vue'
+      // import { reactive, ref, toRef,toRefs, watchEffect } from 'vue-train'
+      import { reactive, ref, toRef, toRefs, watchEffect } from 'vue'
       const state = reactive({ name: 'aa', age: 18, n: { n: 1 } })
-      const flag = ref(true)
-      watchEffect(() => {
-        console.log(flag.value ? state.name : state.age)
-      })
-      flag.value = false
+      const nameRef = toRef(state, 'name')
+      const ageRef = toRef(state, 'age')
+      const { name, age } = toRefs(state)
+      // const flag = ref(true)
+      // watchEffect(() => {
+      //   console.log(flag.value ? state.name : state.age)
+      // })
+      // flag.value =
+      console.log('name', name.value)
+      console.log('age', age.value)
     </script>
   </body>
 </html>
